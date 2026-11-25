@@ -1,4 +1,4 @@
-package com.example.readinglight;
+package com.bobas.readinglight;
 
 import android.app.Activity;
 import android.os.Bundle;
