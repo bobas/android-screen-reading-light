@@ -64,4 +64,13 @@ jobs:
       - name: Create release and upload APK
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" app-debug.apk --repo "$GITHUB_REPOSITORY" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes
+        run: |
+          asset_name="Reading-Light-${GITHUB_REF_NAME}.apk"
+          mv app-debug.apk "$asset_name"
+
+          if ! gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes
+          fi
+
+          gh release upload "$GITHUB_REF_NAME" "$asset_name" --repo "$GITHUB_REPOSITORY" --clobber
+          gh release delete-asset "$GITHUB_REF_NAME" app-debug.apk --repo "$GITHUB_REPOSITORY" --yes || true
